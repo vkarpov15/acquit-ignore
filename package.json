@@ -14,7 +14,7 @@
     "url": "git://github.com/vkarpov15/acquit-ignore.git"
   },
   "peerDependencies": {
-    "acquit": "~0.3"
+    "acquit": ">=0.3.0"
   },
   "jscsConfig": {
     "preset": "airbnb",
