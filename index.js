@@ -7,7 +7,7 @@ var defaultOptions = {
 module.exports = function(parser, options) {
   if (!parser) {
     parser = require('acquit');
-  } else if (!(parser instanceof Acquit)) {
+  } else if (parser.constructor.name === 'Object') {
     options = parser;
     parser = require('acquit');
   }
