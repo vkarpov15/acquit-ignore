@@ -1,4 +1,3 @@
-var Acquit = require('acquit');
 
 var defaultOptions = {
   start: '// acquit:ignore:start',
@@ -7,10 +6,10 @@ var defaultOptions = {
 
 module.exports = function(parser, options) {
   if (!parser) {
-    parser = Acquit;
+    parser = require('acquit');
   } else if (!(parser instanceof Acquit)) {
     options = parser;
-    parser = Acquit;
+    parser = require('acquit');
   }
 
   options = options || {};
