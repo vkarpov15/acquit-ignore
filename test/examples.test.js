@@ -1,5 +1,7 @@
-var acquit = require('acquit');
-var assert = require('assert');
+'use strict';
+
+const acquit = require('acquit');
+const assert = require('assert');
 
 describe('acquit-ignore', function() {
   afterEach(function() {
@@ -12,7 +14,7 @@ describe('acquit-ignore', function() {
    * '// acquit:ignore:start' and '// acquit:ignore:end'.
    */
   it('removes code between delimiters', function() {
-    var acquit = require('acquit');
+    const acquit = require('acquit');
     require('acquit-ignore')();
 
     var contents = [
@@ -34,11 +36,11 @@ describe('acquit-ignore', function() {
       '});'
     ].join('\n');
 
-    var blocks = acquit.parse(contents);
+    const blocks = acquit.parse(contents);
     assert.equal(blocks.length, 1);
     assert.equal(blocks[0].blocks[0].contents, 'works');
 
-    var expectedCode = [
+    const expectedCode = [
       '',
       '    var x = 1;',
       '',
@@ -57,13 +59,13 @@ describe('acquit-ignore', function() {
    * Set your own by setting the 'start' and 'end' options.
    */
   it('supports custom delimiters', function() {
-    var acquit = require('acquit');
+    const acquit = require('acquit');
     require('acquit-ignore')({
       start: '// bacon',
       end: '// eggs'
     });
 
-    var contents = [
+    const contents = [
       'describe(\'test\', function() {',
       '  it(\'works\', function(done) {',
       '    var x = 1;',
@@ -82,11 +84,11 @@ describe('acquit-ignore', function() {
       '});'
     ].join('\n');
 
-    var blocks = acquit.parse(contents);
+    const blocks = acquit.parse(contents);
     assert.equal(blocks.length, 1);
     assert.equal(blocks[0].blocks[0].contents, 'works');
 
-    var expectedCode = [
+    const expectedCode = [
       '',
       '    var x = 1;',
       '    // acquit:ignore:start',
@@ -109,13 +111,13 @@ describe('acquit-ignore', function() {
    * instance.
    */
   it('can accept an acquit instance', function() {
-    var instance = require('acquit')();
+    const instance = require('acquit')();
     require('acquit-ignore')(instance, {
       start: '// bacon',
       end: '// eggs'
     });
 
-    var contents = [
+    const contents = [
       'describe(\'test\', function() {',
       '  it(\'works\', function(done) {',
       '    var x = 1;',
@@ -134,11 +136,11 @@ describe('acquit-ignore', function() {
       '});'
     ].join('\n');
 
-    var blocks = instance.parse(contents);
+    const blocks = instance.parse(contents);
     assert.equal(blocks.length, 1);
     assert.equal(blocks[0].blocks[0].contents, 'works');
 
-    var expectedCode = [
+    const expectedCode = [
       '',
       '    var x = 1;',
       '',

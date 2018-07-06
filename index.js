@@ -1,5 +1,6 @@
+'use strict';
 
-var defaultOptions = {
+const defaultOptions = {
   start: '// acquit:ignore:start',
   end: '// acquit:ignore:end'
 };
@@ -20,7 +21,7 @@ module.exports = function(parser, options) {
     options.end = defaultOptions.end;
   }
 
-  var regexp = new RegExp('[\\s]*' + options.start + '[\\s\\S]*?' +
+  const regexp = new RegExp('[\\s]*' + options.start + '[\\s\\S]*?' +
     options.end, 'g');
 
   parser.transform(function(block) {
