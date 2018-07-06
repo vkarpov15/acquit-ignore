@@ -14,46 +14,45 @@ that removes any code in a block that's between
 '// acquit:ignore:start' and '// acquit:ignore:end'.
 
 ```javascript
-    
-    var acquit = require('acquit');
-    require('acquit-ignore')();
+    const acquit = require('acquit');
+require('acquit-ignore')();
 
-    var contents = [
-      'describe(\'test\', function() {',
-      '  it(\'works\', function(done) {',
-      '    var x = 1;',
-      '    // acquit:ignore:start',
-      '    assert.equal(x, 1);',
-      '    // acquit:ignore:end',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '      // acquit:ignore:start',
-      '      done();',
-      '      // acquit:ignore:end',
-      '    }, 0);',
-      '    ++x;',
-      '  });',
-      '});'
-    ].join('\n');
+var contents = [
+  'describe(\'test\', function() {',
+  '  it(\'works\', function(done) {',
+  '    // acquit:ignore:start',
+  '    setup();',
+  '    // acquit:ignore:end',
+  '    var x = 1;',
+  '    // acquit:ignore:start',
+  '    assert.equal(x, 1);',
+  '    // acquit:ignore:end',
+  '',
+  '    setTimeout(function() {',
+  '      assert.equal(x, 2);',
+  '      // acquit:ignore:start',
+  '      done();',
+  '      // acquit:ignore:end',
+  '    }, 0);',
+  '    ++x;',
+  '  });',
+  '});'
+].join('\n');
 
-    var blocks = acquit.parse(contents);
-    assert.equal(blocks.length, 1);
-    assert.equal(blocks[0].blocks[0].contents, 'works');
+const blocks = acquit.parse(contents);
+assert.equal(blocks.length, 1);
+assert.equal(blocks[0].blocks[0].contents, 'works');
 
-    var expectedCode = [
-      '',
-      '    var x = 1;',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '    }, 0);',
-      '    ++x;',
-      '  '
-    ].join('\n');
+const expectedCode = [
+  'var x = 1;',
+  '',
+  'setTimeout(function() {',
+  '  assert.equal(x, 2);',
+  '}, 0);',
+  '++x;',
+].join('\n');
 
-    assert.equal(blocks[0].blocks[0].code, expectedCode);
-  
+assert.equal(blocks[0].blocks[0].code, expectedCode);
 ```
 
 #### It supports custom delimiters
@@ -62,52 +61,48 @@ Don't like 'acquit:ignore:start' and 'acquit:ignore:end'?
 Set your own by setting the 'start' and 'end' options.
 
 ```javascript
-    
-    var acquit = require('acquit');
-    require('acquit-ignore')({
-      start: '// bacon',
-      end: '// eggs'
-    });
+    const acquit = require('acquit');
+require('acquit-ignore')({
+  start: '// bacon',
+  end: '// eggs'
+});
 
-    var contents = [
-      'describe(\'test\', function() {',
-      '  it(\'works\', function(done) {',
-      '    var x = 1;',
-      '    // acquit:ignore:start',
-      '    assert.equal(x, 1);',
-      '    // acquit:ignore:end',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '      // bacon',
-      '      done();',
-      '      // eggs',
-      '    }, 0);',
-      '    ++x;',
-      '  });',
-      '});'
-    ].join('\n');
+const contents = [
+  'describe(\'test\', function() {',
+  '  it(\'works\', function(done) {',
+  '    var x = 1;',
+  '    // acquit:ignore:start',
+  '    assert.equal(x, 1);',
+  '    // acquit:ignore:end',
+  '',
+  '    setTimeout(function() {',
+  '      assert.equal(x, 2);',
+  '      // bacon',
+  '      done();',
+  '      // eggs',
+  '    }, 0);',
+  '    ++x;',
+  '  });',
+  '});'
+].join('\n');
 
-    var blocks = acquit.parse(contents);
-    assert.equal(blocks.length, 1);
-    assert.equal(blocks[0].blocks[0].contents, 'works');
+const blocks = acquit.parse(contents);
+assert.equal(blocks.length, 1);
+assert.equal(blocks[0].blocks[0].contents, 'works');
 
-    var expectedCode = [
-      '',
-      '    var x = 1;',
-      '    // acquit:ignore:start',
-      '    assert.equal(x, 1);',
-      '    // acquit:ignore:end',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '    }, 0);',
-      '    ++x;',
-      '  '
-    ].join('\n');
+const expectedCode = [
+  'var x = 1;',
+  '// acquit:ignore:start',
+  'assert.equal(x, 1);',
+  '// acquit:ignore:end',
+  '',
+  'setTimeout(function() {',
+  '  assert.equal(x, 2);',
+  '}, 0);',
+  '++x;'
+].join('\n');
 
-    assert.equal(blocks[0].blocks[0].code, expectedCode);
-  
+assert.equal(blocks[0].blocks[0].code, expectedCode);
 ```
 
 #### It can accept an acquit instance
@@ -117,48 +112,44 @@ singleton. However, you can also attach it to an acquit
 instance.
 
 ```javascript
-    
-    var instance = require('acquit')();
-    require('acquit-ignore')(instance, {
-      start: '// bacon',
-      end: '// eggs'
-    });
+    const instance = require('acquit')();
+require('acquit-ignore')(instance, {
+  start: '// bacon',
+  end: '// eggs'
+});
 
-    var contents = [
-      'describe(\'test\', function() {',
-      '  it(\'works\', function(done) {',
-      '    var x = 1;',
-      '    // bacon',
-      '    assert.equal(x, 1);',
-      '    // eggs',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '      // bacon',
-      '      done();',
-      '      // eggs',
-      '    }, 0);',
-      '    ++x;',
-      '  });',
-      '});'
-    ].join('\n');
+const contents = [
+  'describe(\'test\', function() {',
+  '  it(\'works\', function(done) {',
+  '    var x = 1;',
+  '    // bacon',
+  '    assert.equal(x, 1);',
+  '    // eggs',
+  '',
+  '    setTimeout(function() {',
+  '      assert.equal(x, 2);',
+  '      // bacon',
+  '      done();',
+  '      // eggs',
+  '    }, 0);',
+  '    ++x;',
+  '  });',
+  '});'
+].join('\n');
 
-    var blocks = instance.parse(contents);
-    assert.equal(blocks.length, 1);
-    assert.equal(blocks[0].blocks[0].contents, 'works');
+const blocks = instance.parse(contents);
+assert.equal(blocks.length, 1);
+assert.equal(blocks[0].blocks[0].contents, 'works');
 
-    var expectedCode = [
-      '',
-      '    var x = 1;',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '    }, 0);',
-      '    ++x;',
-      '  '
-    ].join('\n');
+const expectedCode = [
+  'var x = 1;',
+  '',
+  'setTimeout(function() {',
+  '  assert.equal(x, 2);',
+  '}, 0);',
+  '++x;'
+].join('\n');
 
-    assert.equal(blocks[0].blocks[0].code, expectedCode);
-  
+assert.equal(blocks[0].blocks[0].code, expectedCode);
 ```
 

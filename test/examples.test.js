@@ -20,6 +20,9 @@ describe('acquit-ignore', function() {
     var contents = [
       'describe(\'test\', function() {',
       '  it(\'works\', function(done) {',
+      '    // acquit:ignore:start',
+      '    setup();',
+      '    // acquit:ignore:end',
       '    var x = 1;',
       '    // acquit:ignore:start',
       '    assert.equal(x, 1);',
@@ -41,14 +44,12 @@ describe('acquit-ignore', function() {
     assert.equal(blocks[0].blocks[0].contents, 'works');
 
     const expectedCode = [
+      'var x = 1;',
       '',
-      '    var x = 1;',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '    }, 0);',
-      '    ++x;',
-      '  '
+      'setTimeout(function() {',
+      '  assert.equal(x, 2);',
+      '}, 0);',
+      '++x;',
     ].join('\n');
 
     assert.equal(blocks[0].blocks[0].code, expectedCode);
@@ -89,17 +90,15 @@ describe('acquit-ignore', function() {
     assert.equal(blocks[0].blocks[0].contents, 'works');
 
     const expectedCode = [
+      'var x = 1;',
+      '// acquit:ignore:start',
+      'assert.equal(x, 1);',
+      '// acquit:ignore:end',
       '',
-      '    var x = 1;',
-      '    // acquit:ignore:start',
-      '    assert.equal(x, 1);',
-      '    // acquit:ignore:end',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '    }, 0);',
-      '    ++x;',
-      '  '
+      'setTimeout(function() {',
+      '  assert.equal(x, 2);',
+      '}, 0);',
+      '++x;'
     ].join('\n');
 
     assert.equal(blocks[0].blocks[0].code, expectedCode);
@@ -141,14 +140,12 @@ describe('acquit-ignore', function() {
     assert.equal(blocks[0].blocks[0].contents, 'works');
 
     const expectedCode = [
+      'var x = 1;',
       '',
-      '    var x = 1;',
-      '',
-      '    setTimeout(function() {',
-      '      assert.equal(x, 2);',
-      '    }, 0);',
-      '    ++x;',
-      '  '
+      'setTimeout(function() {',
+      '  assert.equal(x, 2);',
+      '}, 0);',
+      '++x;'
     ].join('\n');
 
     assert.equal(blocks[0].blocks[0].code, expectedCode);
