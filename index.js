@@ -20,7 +20,7 @@ module.exports = function(parser, options) {
     options.end = defaultOptions.end;
   }
 
-  var regexp = new RegExp('[\\s]+' + options.start + '[\\s\\S]*?' +
+  var regexp = new RegExp('[\\s]*' + options.start + '[\\s\\S]*?' +
     options.end, 'g');
 
   parser.transform(function(block) {
