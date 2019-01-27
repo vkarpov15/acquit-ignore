@@ -1,9 +1,17 @@
 'use strict';
 
-const defaultOptions = {
-  start: '// acquit:ignore:start',
-  end: '// acquit:ignore:end'
-};
+const Archetype = require('archetype');
+
+const OptionsType = new Archetype({
+  start: {
+    $type: 'string',
+    $default: '// acquit:ignore:start'
+  },
+  end: {
+    $type: 'string',
+    $default: '// acquit:ignore:end'
+  }
+}).compile('OptionsType');
 
 module.exports = function(parser, options) {
   if (!parser) {
@@ -13,13 +21,7 @@ module.exports = function(parser, options) {
     parser = require('acquit');
   }
 
-  options = options || {};
-  if (!options.start) {
-    options.start = defaultOptions.start;
-  }
-  if (!options.end) {
-    options.end = defaultOptions.end;
-  }
+  options = new OptionsType(options || {});
 
   const startsWithRegexp = new RegExp('^' + options.start + '[\\s\\S]*?' +
     options.end + '\n?', 'g');

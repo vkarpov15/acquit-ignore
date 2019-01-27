@@ -16,6 +16,9 @@
   "peerDependencies": {
     "acquit": ">=0.3.0"
   },
+  "dependencies": {
+    "archetype": "0.8.x"
+  },
   "jscsConfig": {
     "preset": "airbnb",
     "requirePaddingNewLinesAfterBlocks": null,
