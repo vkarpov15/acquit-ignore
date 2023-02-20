@@ -1,6 +1,6 @@
 {
   "name": "acquit-ignore",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Acquit plugin for removing lines of code from output",
   "main": "index.js",
   "scripts": {
