@@ -17,7 +17,7 @@ describe('acquit-ignore', function() {
     const acquit = require('acquit');
     require('acquit-ignore')();
 
-    var contents = [
+    const contents = [
       'describe(\'test\', function() {',
       '  it(\'works\', function(done) {',
       '    // acquit:ignore:start',
@@ -49,7 +49,7 @@ describe('acquit-ignore', function() {
       'setTimeout(function() {',
       '  assert.equal(x, 2);',
       '}, 0);',
-      '++x;',
+      '++x;'
     ].join('\n');
 
     assert.equal(blocks[0].blocks[0].code, expectedCode);
