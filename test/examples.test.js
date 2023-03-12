@@ -337,5 +337,48 @@ describe('acquit-ignore', function() {
   
       assert.equal(blocks[0].blocks[0].code, expectedCode);
     });
-  })
+  });
+
+  it('works with "nextLine"', function() {
+    const acquit = require('acquit');
+    require('acquit-ignore')();
+
+    var contents = [
+      'describe(\'test\', function() {',
+      '  it(\'works\', function(done) {',
+      '    // acquit:ignore-next-line',
+      '    const t = 1',
+      '    const a = 2',
+      '    // acquit:ignore-next-line',
+      '    setTimeout(function() {',
+      '      something.save()',
+      '      // acquit:ignore-next-line',
+      '      t.cb(() => {',
+      '        other.save()',
+      '        // acquit:ignore-next-line',
+      '      })',
+      '      s.cb(() => {',
+      '        another.save()',
+      '      })',
+      '      // acquit:ignore-next-line',
+      '    }, 0);',
+      '  });',
+      '});'
+    ].join('\n');
+
+    const blocks = acquit.parse(contents);
+    assert.equal(blocks.length, 1);
+    assert.equal(blocks[0].blocks[0].contents, 'works');
+
+    const expectedCode = [
+      'const a = 2',
+      'something.save()',
+      'other.save()',
+      's.cb(() => {',
+      '  another.save()',
+      '})'
+    ].join('\n');
+
+    assert.equal(blocks[0].blocks[0].code, expectedCode);
+  });
 });

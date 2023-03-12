@@ -11,6 +11,10 @@ const OptionsType = new Archetype({
     $type: 'string',
     $default: '// acquit:ignore:end'
   },
+  nextLine: {
+    $type: 'string',
+    $default: "// acquit:ignore-next-line"
+  },
   getIndentDifferenceFromNextLine: {
     $type: 'boolean',
     $default: true
@@ -34,6 +38,7 @@ module.exports = function(parser, options) {
 
   const startRegexp = new RegExp(`^[\\s]*${options.start}$`);
   const endRegexp = new RegExp(`^[\\s]*${options.end}$`);
+  const nextLineRegexp = new RegExp(`^[\\s]*${options.nextLine}$`);
 
   parser.transform(/** @param {AcquitBlock} block */function(block) {
     const spacesRegexp = /^(\s*)/;
@@ -44,6 +49,7 @@ module.exports = function(parser, options) {
      * States:
      * 0: no ignore
      * 1: ignore lines
+     * 2: only ignore the next line
      */
     let currentState = { state: 0, hadMatch: false };
     /** Keeps track of the state from the previous line */
@@ -64,10 +70,18 @@ module.exports = function(parser, options) {
     /** Stores the indent that should get removed */
     let diffIndent = '';
 
+    let hadState2Line = false; // there is probably a better method, but i couldnt think of it for now
+
     for (let line of block.code.split(/\r?\n/)) {
       // set the last line state
       lastLineState.hadMatch = currentState.hadMatch;
       lastLineState.state = currentState.state;      
+
+      // reset state to "0" once having had the next line
+      if (currentState.state === 2 && hadState2Line) {
+        currentState.state = 0;
+        hadState2Line = false;
+      }
 
       let typeMatch;
       switch (currentState.state) {
@@ -75,6 +89,11 @@ module.exports = function(parser, options) {
           typeMatch = startRegexp.exec(line);
           if (typeMatch !== null) {
             currentState.state = 1;
+          } else {
+            typeMatch = nextLineRegexp.exec(line);
+            if (typeMatch !== null) {
+              currentState.state = 2;
+            }
           }
           break;
         case 1:
@@ -83,6 +102,9 @@ module.exports = function(parser, options) {
             currentState.state = 0;
           }
           break;
+        case 2:
+          hadState2Line = true;
+          break;
         default:
           throw new Error("Encountered invalid state");
       }
@@ -90,7 +112,7 @@ module.exports = function(parser, options) {
       currentState.hadMatch = typeMatch !== null;
 
       // set the indent to remove, and use the next line after end comment if "options.getIndentDifferenceFromNextLine" is "true"
-      if (currentState.state === 0 && (typeMatch !== null || (options.getIndentDifferenceFromNextLine && lastLineState.state === 0 && lastLineState.hadMatch))) {
+      if (currentState.state === 0 && (typeMatch !== null || (options.getIndentDifferenceFromNextLine && ((lastLineState.state === 0 && lastLineState.hadMatch) || lastLineState.state === 2)))) {
         // get the start indent of the match
         const _currentIndent = spacesRegexp.exec(line);
         // change the regexp result into always being a string
@@ -140,4 +162,5 @@ module.exports = function(parser, options) {
  * @property {String} start
  * @property {String} end
  * @property {boolean} getIndentDifferenceFromNextLine
+ * @property {String} nextLine
  */
