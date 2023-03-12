@@ -150,4 +150,192 @@ describe('acquit-ignore', function() {
 
     assert.equal(blocks[0].blocks[0].code, expectedCode);
   });
+
+  describe('remove extra indent', () => {
+    it('removes indent that changes from a start to the end comment', function() {
+      const acquit = require('acquit');
+      require('acquit-ignore')();
+  
+      var contents = [
+        'describe(\'test\', function() {',
+        '  it(\'works\', function(done) {',
+        '    // acquit:ignore:start',
+        '    const t = 1',
+        '    // acquit:ignore:end',
+        '    const a = 2',
+        '    // acquit:ignore:start',
+        '    setTimeout(function() {',
+        '      // acquit:ignore:end',
+        '      something.save()',
+        '      // acquit:ignore:start',
+        '      t.cb(() => {',
+        '        // acquit:ignore:end',
+        '        other.save()',
+        '        // acquit:ignore:start',
+        '      })',
+        '      // acquit:ignore:end',
+        '      s.cb(() => {',
+        '        another.save()',
+        '      })',
+        '      // acquit:ignore:start',
+        '    }, 0);',
+        '    // acquit:ignore:end',
+        '  });',
+        '});'
+      ].join('\n');
+  
+      const blocks = acquit.parse(contents);
+      assert.equal(blocks.length, 1);
+      assert.equal(blocks[0].blocks[0].contents, 'works');
+  
+      const expectedCode = [
+        'const a = 2',
+        'something.save()',
+        'other.save()',
+        's.cb(() => {',
+        '  another.save()',
+        '})'
+      ].join('\n');
+  
+      assert.equal(blocks[0].blocks[0].code, expectedCode);
+    });
+
+    // this situation (comments aligned with previous line) can happen because eslint somehow allows that
+    it('removes indent that changes from a start to the end comment even if end comment is aligned to the previous indent', function() {
+      const acquit = require('acquit');
+      require('acquit-ignore')();
+  
+      var contents = [
+        'describe(\'test\', function() {',
+        '  it(\'works\', function(done) {',
+        '    // acquit:ignore:start',
+        '    const t = 1',
+        '    // acquit:ignore:end',
+        '    const a = 2',
+        '    // acquit:ignore:start',
+        '    setTimeout(function() {',
+        '    // acquit:ignore:end', // should get the indent from the next line
+        '      something.save()', // should get indent from here
+        '      // acquit:ignore:start',
+        '      t.cb(() => {',
+        '      // acquit:ignore:end', // should get the indent from the next line
+        '        other.save()', // should get indent from here
+        '        // acquit:ignore:start',
+        '      })',
+        '      // acquit:ignore:end',
+        '      s.cb(() => {',
+        '        another.save()',
+        '      })',
+        '      // acquit:ignore:start',
+        '    }, 0);',
+        '    // acquit:ignore:end',
+        '  });',
+        '});'
+      ].join('\n');
+  
+      const blocks = acquit.parse(contents);
+      assert.equal(blocks.length, 1);
+      assert.equal(blocks[0].blocks[0].contents, 'works');
+  
+      const expectedCode = [
+        'const a = 2',
+        'something.save()',
+        'other.save()',
+        's.cb(() => {',
+        '  another.save()',
+        '})'
+      ].join('\n');
+  
+      assert.equal(blocks[0].blocks[0].code, expectedCode);
+    });
+
+    it('does not remove indent that changes from a start to the end comment if end comment is aligned to the previous indent', function() {
+      const acquit = require('acquit');
+      require('acquit-ignore')({
+        getIndentDifferenceFromNextLine: false
+      });
+  
+      var contents = [
+        'describe(\'test\', function() {',
+        '  it(\'works\', function(done) {',
+        '    // acquit:ignore:start',
+        '    const t = 1',
+        '    // acquit:ignore:end',
+        '    const a = 2',
+        '    // acquit:ignore:start',
+        '    setTimeout(function() {',
+        '    // acquit:ignore:end', // indent should not be gotten from the next line anymore, because option disabled it
+        '      something.save()',
+        '      // acquit:ignore:start',
+        '      t.cb(() => {',
+        '      // acquit:ignore:end', // indent should not be gotten from the next line anymore, because option disabled it
+        '        other.save()',
+        '        // acquit:ignore:start',
+        '      })',
+        '      // acquit:ignore:end',
+        '      s.cb(() => {',
+        '        another.save()',
+        '      })',
+        '      // acquit:ignore:start',
+        '    }, 0);',
+        '    // acquit:ignore:end',
+        '  });',
+        '});'
+      ].join('\n');
+  
+      const blocks = acquit.parse(contents);
+      assert.equal(blocks.length, 1);
+      assert.equal(blocks[0].blocks[0].contents, 'works');
+  
+      const expectedCode = [
+        'const a = 2',
+        '  something.save()',
+        '  other.save()',
+        's.cb(() => {',
+        '  another.save()',
+        '})'
+      ].join('\n');
+  
+      assert.equal(blocks[0].blocks[0].code, expectedCode);
+    });
+
+    it('handle different start indexes', function() {
+      const acquit = require('acquit');
+      require('acquit-ignore')();
+  
+      var contents = [
+        'describe(\'test\', function() {',
+        '  it(\'works\', function(done) {',
+        '    // acquit:ignore:start',
+        '    {',
+        '      // acquit:ignore:end',
+        '      test1',
+        '      // acquit:ignore:start',
+        '    }',
+        '    // acquit:ignore:end',
+        '    test2',
+        '    // acquit:ignore:start',
+        '    {',
+        '      // acquit:ignore:end',
+        '      test3',
+        '      // acquit:ignore:start',
+        '    }',
+        '    // acquit:ignore:end',
+        '  });',
+        '});'
+      ].join('\n');
+  
+      const blocks = acquit.parse(contents);
+      assert.equal(blocks.length, 1);
+      assert.equal(blocks[0].blocks[0].contents, 'works');
+  
+      const expectedCode = [
+        'test1',
+        'test2',
+        'test3'
+      ].join('\n');
+  
+      assert.equal(blocks[0].blocks[0].code, expectedCode);
+    });
+  })
 });
