@@ -13,6 +13,11 @@ const OptionsType = new Archetype({
   }
 }).compile('OptionsType');
 
+/**
+ * 
+ * @param {*} parser 
+ * @param {AcquitIgnoreOptions} options 
+ */
 module.exports = function(parser, options) {
   if (!parser) {
     parser = require('acquit');
@@ -26,8 +31,22 @@ module.exports = function(parser, options) {
   const inlineRegexp = new RegExp('^[\\s]*' + options.start + '[\\s\\S]*?' +
     options.end + '\n?', 'gm');
 
-  parser.transform(function(block) {
+  parser.transform(/** @param {AcquitBlock} block */function(block) {
     block.code = block.code.
       replace(inlineRegexp, '');
   });
 };
+
+/**
+ * @typedef {Object} AcquitBlock
+ * @property {String} type Test type (like "it")
+ * @property {String} contents Test name (like "should work")
+ * @property {Array.<String>} comments
+ * @property {String} code All the code inside the test (without outer indent)
+ */
+
+/**
+ * @typedef {Object} AcquitIgnoreOptions
+ * @property {String} start
+ * @property {String} end
+ */
