@@ -23,14 +23,11 @@ module.exports = function(parser, options) {
 
   options = new OptionsType(options || {});
 
-  const startsWithRegexp = new RegExp('^' + options.start + '[\\s\\S]*?' +
-    options.end + '\n?', 'g');
-  const inlineRegexp = new RegExp('[\\s]*' + options.start + '[\\s\\S]*?' +
-    options.end, 'g');
+  const inlineRegexp = new RegExp('^[\\s]*' + options.start + '[\\s\\S]*?' +
+    options.end + '\n?', 'gm');
 
   parser.transform(function(block) {
     block.code = block.code.
-      replace(startsWithRegexp, '').
       replace(inlineRegexp, '');
   });
 };
