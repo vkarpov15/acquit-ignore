@@ -1,0 +1,4 @@
+# dont include things like the travis config
+*.yml
+# dont include the tests
+test/
