@@ -18,7 +18,7 @@
     "acquit": ">=0.3.0"
   },
   "dependencies": {
-    "archetype": "^0.13.0"
+    "archetype": "^0.13.1"
   },
   "jscsConfig": {
     "preset": "airbnb",
