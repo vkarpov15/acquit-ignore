@@ -155,8 +155,8 @@ describe('acquit-ignore', function() {
     it('removes indent that changes from a start to the end comment', function() {
       const acquit = require('acquit');
       require('acquit-ignore')();
-  
-      var contents = [
+
+      const contents = [
         'describe(\'test\', function() {',
         '  it(\'works\', function(done) {',
         '    // acquit:ignore:start',
@@ -183,11 +183,11 @@ describe('acquit-ignore', function() {
         '  });',
         '});'
       ].join('\n');
-  
+
       const blocks = acquit.parse(contents);
       assert.equal(blocks.length, 1);
       assert.equal(blocks[0].blocks[0].contents, 'works');
-  
+
       const expectedCode = [
         'const a = 2',
         'something.save()',
@@ -196,7 +196,7 @@ describe('acquit-ignore', function() {
         '  another.save()',
         '})'
       ].join('\n');
-  
+
       assert.equal(blocks[0].blocks[0].code, expectedCode);
     });
 
@@ -204,8 +204,8 @@ describe('acquit-ignore', function() {
     it('removes indent that changes from a start to the end comment even if end comment is aligned to the previous indent', function() {
       const acquit = require('acquit');
       require('acquit-ignore')();
-  
-      var contents = [
+
+      const contents = [
         'describe(\'test\', function() {',
         '  it(\'works\', function(done) {',
         '    // acquit:ignore:start',
@@ -232,11 +232,11 @@ describe('acquit-ignore', function() {
         '  });',
         '});'
       ].join('\n');
-  
+
       const blocks = acquit.parse(contents);
       assert.equal(blocks.length, 1);
       assert.equal(blocks[0].blocks[0].contents, 'works');
-  
+
       const expectedCode = [
         'const a = 2',
         'something.save()',
@@ -245,7 +245,7 @@ describe('acquit-ignore', function() {
         '  another.save()',
         '})'
       ].join('\n');
-  
+
       assert.equal(blocks[0].blocks[0].code, expectedCode);
     });
 
@@ -254,8 +254,8 @@ describe('acquit-ignore', function() {
       require('acquit-ignore')({
         getIndentDifferenceFromNextLine: false
       });
-  
-      var contents = [
+
+      const contents = [
         'describe(\'test\', function() {',
         '  it(\'works\', function(done) {',
         '    // acquit:ignore:start',
@@ -282,11 +282,11 @@ describe('acquit-ignore', function() {
         '  });',
         '});'
       ].join('\n');
-  
+
       const blocks = acquit.parse(contents);
       assert.equal(blocks.length, 1);
       assert.equal(blocks[0].blocks[0].contents, 'works');
-  
+
       const expectedCode = [
         'const a = 2',
         '  something.save()',
@@ -295,15 +295,15 @@ describe('acquit-ignore', function() {
         '  another.save()',
         '})'
       ].join('\n');
-  
+
       assert.equal(blocks[0].blocks[0].code, expectedCode);
     });
 
     it('handle different start indexes', function() {
       const acquit = require('acquit');
       require('acquit-ignore')();
-  
-      var contents = [
+
+      const contents = [
         'describe(\'test\', function() {',
         '  it(\'works\', function(done) {',
         '    // acquit:ignore:start',
@@ -324,17 +324,17 @@ describe('acquit-ignore', function() {
         '  });',
         '});'
       ].join('\n');
-  
+
       const blocks = acquit.parse(contents);
       assert.equal(blocks.length, 1);
       assert.equal(blocks[0].blocks[0].contents, 'works');
-  
+
       const expectedCode = [
         'test1',
         'test2',
         'test3'
       ].join('\n');
-  
+
       assert.equal(blocks[0].blocks[0].code, expectedCode);
     });
   });
@@ -343,7 +343,7 @@ describe('acquit-ignore', function() {
     const acquit = require('acquit');
     require('acquit-ignore')();
 
-    var contents = [
+    const contents = [
       'describe(\'test\', function() {',
       '  it(\'works\', function(done) {',
       '    // acquit:ignore-next-line',

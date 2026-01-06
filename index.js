@@ -13,7 +13,7 @@ const OptionsType = new Archetype({
   },
   nextLine: {
     $type: 'string',
-    $default: "// acquit:ignore-next-line"
+    $default: '// acquit:ignore-next-line'
   },
   getIndentDifferenceFromNextLine: {
     $type: 'boolean',
@@ -22,9 +22,9 @@ const OptionsType = new Archetype({
 }).compile('OptionsType');
 
 /**
- * 
- * @param {*} parser 
- * @param {AcquitIgnoreOptions} options 
+ *
+ * @param {*} parser
+ * @param {AcquitIgnoreOptions} options
  */
 module.exports = function(parser, options) {
   if (!parser) {
@@ -51,9 +51,9 @@ module.exports = function(parser, options) {
      * 1: ignore lines
      * 2: only ignore the next line
      */
-    let currentState = { state: 0, hadMatch: false };
+    const currentState = { state: 0, hadMatch: false };
     /** Keeps track of the state from the previous line */
-    let lastLineState = { state: 0, hadMatch: false };
+    const lastLineState = { state: 0, hadMatch: false };
 
     /** Sets which line-ending to use */
     let lineEnd = '\n';
@@ -63,7 +63,7 @@ module.exports = function(parser, options) {
       const matches = /(\r?\n)^/m.exec(block.code);
 
       if (matches !== null) {
-       lineEnd = matches[0];
+        lineEnd = matches[0];
       }
     }
 
@@ -75,7 +75,7 @@ module.exports = function(parser, options) {
     for (let line of block.code.split(/\r?\n/)) {
       // set the last line state
       lastLineState.hadMatch = currentState.hadMatch;
-      lastLineState.state = currentState.state;      
+      lastLineState.state = currentState.state;
 
       // reset state to "0" once having had the next line
       if (currentState.state === 2 && hadState2Line) {
@@ -106,7 +106,7 @@ module.exports = function(parser, options) {
           hadState2Line = true;
           break;
         default:
-          throw new Error("Encountered invalid state");
+          throw new Error('Encountered invalid state');
       }
 
       currentState.hadMatch = typeMatch !== null;
@@ -130,13 +130,13 @@ module.exports = function(parser, options) {
         }
 
         out = out + line + '\n'; // this will always add a trailing newline, will later be removed if needed
-      } 
+      }
     }
 
     // determine if the original code ended with a line break (and with which) and modify the output accordingly
     {
       // only take the last 5 characters to make matching easier
-      const lastChars = block.code.substring(block.code.length-5);
+      const lastChars = block.code.substring(block.code.length - 5);
 
       const matches = /(\r?\n)$/.exec(lastChars);
 
